@@ -1,9 +1,9 @@
-# syncstream(matcher, mapper, options)
+# syncsplit(matcher, mapper, options)
 
-[![build status](https://secure.travis-ci.org/mcollina/syncstream.svg)](http://travis-ci.org/mcollina/syncstream)
+[![build status](https://secure.travis-ci.org/mcollina/syncsplit.svg)](http://travis-ci.org/mcollina/syncsplit)
 
 Break up a stream and reassemble it so that each line is a chunk.
-`syncstream` is inspired by [@dominictarr](https://github.com/dominictarr) [`split`](https://github.com/dominictarr/split) module
+`syncsplit` is inspired by [@dominictarr](https://github.com/dominictarr) [`split`](https://github.com/dominictarr/split) module
 and by mine [`split2`](https://github.com/mcollina/split2) module, and it is totally API compatible with it.
 However, it is based on [`syncthrough`](https://github.com/mcollina/syncthrough) it is fully synchronous.
 
@@ -11,7 +11,7 @@ However, it is based on [`syncthrough`](https://github.com/mcollina/syncthrough)
 
 ``` js
   fs.createReadStream(file)
-    .pipe(syncstream())
+    .pipe(syncsplit())
     .on('data', function (line) {
       //each chunk now is a seperate line!
     })
@@ -36,7 +36,7 @@ var splitFile = function(filename) {
   var file = fs.createReadStream(filename)
 
   return file
-    .pipe(syncstream())
+    .pipe(syncsplit())
     .on('close', function() {
       // destroy the file stream in case the split stream was destroyed
       file.destroy()
@@ -50,11 +50,11 @@ stream.destroy() // will destroy the input file stream
 
 # NDJ - Newline Delimited Json
 
-`syncstream` accepts a function which transforms each line.
+`syncsplit` accepts a function which transforms each line.
 
 ``` js
 fs.createReadStream(file)
-  .pipe(syncstream(JSON.parse))
+  .pipe(syncsplit(JSON.parse))
   .on('data', function (obj) {
     //each chunk now is a a js object
   })
