@@ -1,17 +1,17 @@
-# Split2(matcher, mapper, options)
+# syncstream(matcher, mapper, options)
 
-[![build status](https://secure.travis-ci.org/mcollina/split2.svg)](http://travis-ci.org/mcollina/split2)
+[![build status](https://secure.travis-ci.org/mcollina/syncstream.svg)](http://travis-ci.org/mcollina/syncstream)
 
 Break up a stream and reassemble it so that each line is a chunk.
-`split2` is inspired by [@dominictarr](https://github.com/dominictarr) [`split`](https://github.com/dominictarr/split) module,
-and it is totally API compatible with it.
-However, it is based on [`through2`](https://github.com/rvagg/through2) by [@rvagg](https://github.com/rvagg) and it is fully based on Stream3.
+`syncstream` is inspired by [@dominictarr](https://github.com/dominictarr) [`split`](https://github.com/dominictarr/split) module
+and by mine [`split2`](https://github.com/mcollina/split2) module, and it is totally API compatible with it.
+However, it is based on [`syncthrough`](https://github.com/mcollina/syncthrough) it is fully synchronous.
 
 `matcher` may be a `String`, or a `RegExp`. Example, read every line in a file ...
 
 ``` js
   fs.createReadStream(file)
-    .pipe(split2())
+    .pipe(syncstream())
     .on('data', function (line) {
       //each chunk now is a seperate line!
     })
@@ -36,7 +36,7 @@ var splitFile = function(filename) {
   var file = fs.createReadStream(filename)
 
   return file
-    .pipe(split2())
+    .pipe(syncstream())
     .on('close', function() {
       // destroy the file stream in case the split stream was destroyed
       file.destroy()
@@ -50,22 +50,19 @@ stream.destroy() // will destroy the input file stream
 
 # NDJ - Newline Delimited Json
 
-`split2` accepts a function which transforms each line.
+`syncstream` accepts a function which transforms each line.
 
 ``` js
 fs.createReadStream(file)
-  .pipe(split2(JSON.parse))
+  .pipe(syncstream(JSON.parse))
   .on('data', function (obj) {
     //each chunk now is a a js object
   })
 ```
 
-However, in [@dominictarr](https://github.com/dominictarr) [`split`](https://github.com/dominictarr/split) the mapper
-is wrapped in a try-catch, while here it is not: if your parsing logic can throw, wrap it yourself.
-
 # License
 
-Copyright (c) 2014-2017, Matteo Collina <hello@matteocollina.com>
+Copyright (c) 2017, Matteo Collina <hello@matteocollina.com>
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

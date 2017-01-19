@@ -178,15 +178,13 @@ test('support custom matcher and mapper', function (t) {
   input.end(JSON.stringify(b))
 })
 
-test('support custom matcher and options', function (t) {
-  t.plan(6)
+test('support custom matcher', function (t) {
+  t.plan(4)
 
-  var input = split('~', { highWaterMark: 1024 })
+  var input = split('~')
 
   t.equal(input.matcher, '~')
   t.equal(typeof input.mapper, 'function')
-  t.equal(input._readableState.highWaterMark, 1024)
-  t.equal(input._writableState.highWaterMark, 1024)
 
   input.pipe(strcb(function (err, list) {
     t.error(err)
@@ -197,16 +195,14 @@ test('support custom matcher and options', function (t) {
 })
 
 test('support mapper and options', function (t) {
-  t.plan(6)
+  t.plan(4)
 
   var a = { a: '42' }
   var b = { b: '24' }
-  var input = split(JSON.parse, { highWaterMark: 1024 })
+  var input = split(JSON.parse)
 
   t.ok(input.matcher instanceof RegExp, 'matcher is RegExp')
   t.equal(typeof input.mapper, 'function')
-  t.equal(input._readableState.highWaterMark, 1024)
-  t.equal(input._writableState.highWaterMark, 1024)
 
   input.pipe(objcb(function (err, list) {
     t.error(err)

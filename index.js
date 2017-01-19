@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2016, Matteo Collina <hello@matteocollina.com>
+Copyright (c) 2017, Matteo Collina <hello@matteocollina.com>
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -16,13 +16,14 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 'use strict'
 
-var through = require('through2')
+var through = require('syncthrough')
 var StringDecoder = require('string_decoder').StringDecoder
 
-function transform (chunk, enc, cb) {
+function transform (chunk) {
   this._last += this._decoder.write(chunk)
   if (this._last.length > this.maxLength) {
-    return cb(new Error('maximum buffer reached'))
+    this.emit('error', new Error('maximum buffer reached'))
+    return
   }
 
   var list = this._last.split(this.matcher)
@@ -32,19 +33,15 @@ function transform (chunk, enc, cb) {
   for (var i = 0; i < list.length; i++) {
     push(this, this.mapper(list[i]))
   }
-
-  cb()
 }
 
-function flush (cb) {
+function flush () {
   // forward any gibberish left in there
   this._last += this._decoder.end()
 
   if (this._last) {
     push(this, this.mapper(this._last))
   }
-
-  cb()
 }
 
 function push (self, val) {
@@ -90,10 +87,7 @@ function split (matcher, mapper, options) {
       }
   }
 
-  var stream = through(options, transform, flush)
-
-  // this stream is in objectMode only in the readable part
-  stream._readableState.objectMode = true
+  var stream = through(transform, flush)
 
   stream._last = ''
   stream._decoder = new StringDecoder('utf8')
